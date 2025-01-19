@@ -1,16 +1,17 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDB } from '@/lib/db';
 import Image from '../../../models/Image';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: NextRequest) {
     await connectToDB();
 
+    const body = await req.json();
+
     try {
-        const { imageUrl } = req.body;
+        const { imageUrl } = body;
         const newImage = new Image({ imageUrl });
         await newImage.save();
-        res.status(200).json({ message: 'Image uploaded successfully' });
+        NextResponse.json({ message: 'Image uploaded successfully' });
     } catch (error) {
         NextResponse.json({ message: 'Error uploading image' , error});
     }
